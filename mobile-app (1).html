@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#001529">
+<title>BRAM Mobile - Controle de Pedidos</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   RESET & VARIÁVEIS
+   ═══════════════════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --ocean-deep:#001529;
+  --ocean-mid:#003a70;
+  --ocean-light:#005eb8;
+  --wave-teal:#00d4ff;
+  --coral:#ff3366;
+  --golden:#ffaa00;
+  --seafoam:#00e676;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BODY & CONTAINER MOBILE
+   ═══════════════════════════════════════════════════════════════════ */
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#001529 0%,#003a70 50%,#005eb8 100%);
+  background-attachment:fixed;
+  color:#f8f9fa;
+  min-height:100vh;
+  padding:0;
+  margin:0;
+  overflow-x:hidden;
+  padding-bottom:80px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.container{
+  padding:0 1rem 1rem;
+  max-width:100%;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HEADER MOBILE
+   ═══════════════════════════════════════════════════════════════════ */
+.header{
+  background:linear-gradient(135deg,rgba(0,21,41,0.97),rgba(0,58,112,0.97));
+  backdrop-filter:blur(20px);
+  padding:1rem;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+  position:sticky;
+  top:0;
+  z-index:1000;
+  border-bottom:2px solid var(--wave-teal);
+}
+
+.header-content{
+  display:flex;
+  flex-direction:column;
+  gap:0.75rem;
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.logo-section{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+
+.logo{
+  font-size:2rem;
+  filter:drop-shadow(0 4px 8px rgba(0,212,255,0.3));
+}
+
+.header-title{
+  font-family:'Poppins',sans-serif;
+  font-size:1.1rem;
+  font-weight:700;
+  letter-spacing:0.5px;
+  text-shadow:1px 1px 5px rgba(0,0,0,0.5);
+  line-height:1.2;
+}
+
+.header-subtitle{
+  font-size:0.7rem;
+  opacity:0.8;
+  font-weight:300;
+}
+
+.comprador-button{
+  background:linear-gradient(135deg,var(--wave-teal),#0080ff);
+  border:none;
+  padding:0.5rem 1rem;
+  border-radius:12px;
+  color:white;
+  font-weight:700;
+  font-size:0.9rem;
+  cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,212,255,0.4);
+  white-space:nowrap;
+  position:relative;
+}
+
+.comprador-dropdown{
+  display:none;
+  position:fixed;
+  top:70px;
+  right:1rem;
+  background:linear-gradient(135deg,rgba(0,21,41,0.98),rgba(0,58,112,0.98));
+  backdrop-filter:blur(20px);
+  border-radius:16px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.7);
+  border:2px solid var(--wave-teal);
+  min-width:200px;
+  z-index:2000;
+  max-height:70vh;
+  overflow-y:auto;
+}
+
+.comprador-dropdown.active{
+  display:block;
+  animation:slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateY(-10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.comprador-option{
+  padding:1rem;
+  cursor:pointer;
+  transition:all 0.3s;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  font-weight:600;
+  font-size:0.9rem;
+}
+
+.comprador-option:last-child{
+  border-bottom:none;
+}
+
+.comprador-option:hover,
+.comprador-option:active{
+  background:rgba(0,212,255,0.2);
+}
+
+.comprador-option.active{
+  background:rgba(0,212,255,0.3);
+  border-left:4px solid var(--wave-teal);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FILTROS MOBILE
+   ═══════════════════════════════════════════════════════════════════ */
+.filter-bar{
+  background:rgba(255,255,255,0.1);
+  backdrop-filter:blur(20px);
+  padding:1rem;
+  margin:1rem 0;
+  border-radius:16px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+
+.filter-content{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+.filter-group{
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+.filter-label{
+  font-weight:600;
+  font-size:0.85rem;
+  color:white;
+  opacity:0.9;
+}
+
+.area-selector,
+.month-filter-toggle-btn{
+  width:100%;
+  padding:0.875rem 1rem;
+  font-size:1rem;
+  border:2px solid var(--wave-teal);
+  border-radius:12px;
+  background:linear-gradient(135deg,rgba(0,58,112,0.9),rgba(0,94,184,0.9));
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,212,255,0.3);
+}
+
+.area-selector option{
+  background:#003a70;
+  color:white;
+  padding:0.5rem;
+}
+
+.month-filter-toggle-btn{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border:none;
+}
+
+.dropdown-arrow{
+  transition:transform 0.3s;
+  font-size:0.8rem;
+}
+
+.month-filter-toggle-btn.open .dropdown-arrow{
+  transform:rotate(180deg);
+}
+
+.month-filter-dropdown{
+  position:fixed;
+  z-index:99999;
+  background:rgba(0,58,112,0.98);
+  border:2px solid var(--wave-teal);
+  border-radius:16px;
+  box-shadow:0 16px 48px rgba(0,0,0,0.7);
+  backdrop-filter:blur(20px);
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  left:1rem;
+  right:1rem;
+  max-width:calc(100% - 2rem);
+}
+
+.month-filter-list{
+  max-height:40vh;
+  overflow-y:auto;
+  padding:0.5rem;
+  background:rgba(0,58,112,0.5);
+  border:2px solid var(--wave-teal);
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  gap:0.5rem;
+}
+
+.month-filter-option{
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  padding:0.75rem;
+  cursor:pointer;
+  transition:all 0.3s;
+  border-radius:8px;
+  color:white;
+  font-weight:600;
+  user-select:none;
+  background:rgba(255,255,255,0.05);
+  font-size:0.95rem;
+}
+
+.month-filter-option:active{
+  background:rgba(255,255,255,0.15);
+  transform:scale(0.98);
+}
+
+.month-filter-option:first-child{
+  background:rgba(0,212,255,0.15);
+  border:1px solid rgba(0,212,255,0.3);
+  font-weight:700;
+}
+
+.month-filter-option input[type="checkbox"]{
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  accent-color:var(--wave-teal);
+  flex-shrink:0;
+}
+
+.filter-apply-btn{
+  padding:1rem;
+  background:linear-gradient(135deg,var(--wave-teal),#0080ff);
+  border:none;
+  border-radius:12px;
+  color:white;
+  font-weight:700;
+  font-size:1rem;
+  cursor:pointer;
+  box-shadow:0 4px 20px rgba(0,212,255,0.4);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+
+.filter-apply-btn:active{
+  transform:scale(0.98);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   KPI CARDS MOBILE
+   ═══════════════════════════════════════════════════════════════════ */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1rem;
+  margin:1rem 0;
+}
+
+.kpi-card{
+  background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));
+  backdrop-filter:blur(20px);
+  padding:1rem;
+  border-radius:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  cursor:pointer;
+  transition:all 0.3s;
+  border:1px solid rgba(255,255,255,0.1);
+  position:relative;
+  overflow:hidden;
+}
+
+.kpi-card:active{
+  transform:scale(0.98);
+}
+
+.kpi-icon{
+  font-size:2rem;
+  margin-bottom:0.5rem;
+  display:block;
+}
+
+.kpi-label{
+  font-size:0.75rem;
+  opacity:0.85;
+  font-weight:500;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:0.25rem;
+}
+
+.kpi-value{
+  font-size:1.8rem;
+  font-weight:800;
+  color:white;
+  text-shadow:0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VALORES & CRÍTICOS MOBILE
+   ═══════════════════════════════════════════════════════════════════ */
+.section-title{
+  font-size:1.1rem;
+  font-weight:700;
+  margin:2rem 0 1rem;
+  padding-left:0.5rem;
+  border-left:4px solid var(--wave-teal);
+}
+
+.valores-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:1rem;
+  margin-bottom:2rem;
+}
+
+.valor-card{
+  background:linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));
+  backdrop-filter:blur(20px);
+  padding:1.25rem;
+  border-radius:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+}
+
+.valor-label{
+  font-size:0.85rem;
+  opacity:0.85;
+  margin-bottom:0.5rem;
+  font-weight:500;
+}
+
+.valor-amount{
+  font-size:1.5rem;
+  font-weight:800;
+  color:var(--seafoam);
+  text-shadow:0 2px 10px rgba(0,230,118,0.3);
+}
+
+.valor-detail{
+  font-size:0.8rem;
+  opacity:0.7;
+  margin-top:0.5rem;
+}
+
+.critical-container{
+  background:linear-gradient(135deg,rgba(255,255,255,0.1),rgba(255,255,255,0.05));
+  backdrop-filter:blur(20px);
+  padding:1rem;
+  border-radius:16px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.3);
+  margin-bottom:2rem;
+}
+
+.critical-item{
+  padding:1rem;
+  background:rgba(255,255,255,0.05);
+  border-radius:12px;
+  margin-bottom:0.75rem;
+  cursor:pointer;
+  transition:all 0.3s;
+}
+
+.critical-item:last-child{
+  margin-bottom:0;
+}
+
+.critical-item:active{
+  transform:scale(0.98);
+  background:rgba(255,255,255,0.1);
+}
+
+.critical-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:0.5rem;
+}
+
+.critical-name{
+  font-weight:700;
+  font-size:0.95rem;
+  color:white;
+}
+
+.critical-badge{
+  background:var(--coral);
+  color:white;
+  padding:0.25rem 0.75rem;
+  border-radius:20px;
+  font-size:0.75rem;
+  font-weight:700;
+}
+
+.critical-value{
+  font-size:1.2rem;
+  font-weight:800;
+  color:var(--coral);
+  margin-top:0.25rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   LOADING & EMPTY STATES
+   ═══════════════════════════════════════════════════════════════════ */
+.loading{
+  text-align:center;
+  padding:3rem 1rem;
+}
+
+.spinner{
+  border:4px solid rgba(0,212,255,0.2);
+  border-top:4px solid var(--wave-teal);
+  border-radius:50%;
+  width:60px;
+  height:60px;
+  animation:spin 1s linear infinite;
+  margin:0 auto 1rem;
+}
+
+@keyframes spin{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+
+.empty-state{
+  text-align:center;
+  padding:3rem 1rem;
+  opacity:0.7;
+}
+
+.empty-icon{
+  font-size:4rem;
+  margin-bottom:1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BOTTOM NAV (OPCIONAL)
+   ═══════════════════════════════════════════════════════════════════ */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:linear-gradient(135deg,rgba(0,21,41,0.97),rgba(0,58,112,0.97));
+  backdrop-filter:blur(20px);
+  border-top:2px solid var(--wave-teal);
+  padding:0.75rem 0;
+  z-index:1000;
+  display:none; /* Ativar se necessário */
+}
+
+.bottom-nav-content{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}
+
+.nav-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:0.25rem;
+  padding:0.5rem;
+  color:rgba(255,255,255,0.6);
+  cursor:pointer;
+  transition:all 0.3s;
+  flex:1;
+  max-width:100px;
+}
+
+.nav-btn:active,
+.nav-btn.active{
+  color:var(--wave-teal);
+  transform:scale(0.95);
+}
+
+.nav-icon{
+  font-size:1.5rem;
+}
+
+.nav-label{
+  font-size:0.7rem;
+  font-weight:600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLBAR MOBILE
+   ═══════════════════════════════════════════════════════════════════ */
+.month-filter-list::-webkit-scrollbar,
+.comprador-dropdown::-webkit-scrollbar{
+  width:8px;
+}
+
+.month-filter-list::-webkit-scrollbar-track,
+.comprador-dropdown::-webkit-scrollbar-track{
+  background:rgba(0,0,0,0.3);
+  border-radius:4px;
+}
+
+.month-filter-list::-webkit-scrollbar-thumb,
+.comprador-dropdown::-webkit-scrollbar-thumb{
+  background:linear-gradient(135deg,var(--wave-teal),#0080ff);
+  border-radius:4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   UTILITY
+   ═══════════════════════════════════════════════════════════════════ */
+.hidden{
+  display:none!important;
+}
+
+/* SAFE AREA para iPhone com notch */
+@supports(padding:max(0px)){
+  body{
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:max(80px,env(safe-area-inset-bottom));
+  }
+  .header{
+    padding-top:max(1rem,env(safe-area-inset-top));
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     HEADER
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="header">
+  <div class="header-content">
+    <div class="header-top">
+      <div class="logo-section">
+        <div class="logo">🚢</div>
+        <div>
+          <div class="header-title">BRAM Offshore</div>
+          <div class="header-subtitle">Controle de Pedidos</div>
+        </div>
+      </div>
+      <button class="comprador-button" onclick="toggleCompradorDropdown()">
+        <span id="compradorLabel">Lineker</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dropdown Compradores -->
+<div class="comprador-dropdown" id="compradorDropdown">
+  <div class="comprador-option active" onclick="selectComprador('Lineker')">📦 Lineker</div>
+  <div class="comprador-option" onclick="selectComprador('Rafael')">📊 Rafael</div>
+  <div class="comprador-option" onclick="selectComprador('Thiago')">⚙️ Thiago</div>
+  <div class="comprador-option" onclick="selectComprador('Robson')">👨‍💼 Robson</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     FILTROS
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="filter-bar">
+  <div class="filter-content">
+    <div class="filter-group">
+      <div class="filter-label">🔧 Área de Serviço:</div>
+      <select class="area-selector" id="areaSelector" onchange="changeArea()">
+        <option value="manutencao">🔧 Manutenção</option>
+        <option value="operacoes">⚙️ Operações</option>
+      </select>
+    </div>
+    
+    <div class="filter-group">
+      <div class="filter-label">📅 Período:</div>
+      <button class="month-filter-toggle-btn" onclick="toggleMonthFilterDropdown()">
+        <span id="monthFilterLabel">📊 TODOS OS MESES</span>
+        <span class="dropdown-arrow">▼</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Dropdown Meses -->
+<div class="month-filter-dropdown" id="monthFilterDropdown" style="display:none">
+  <div class="month-filter-list" id="monthFilterList">
+    <label class="month-filter-option">
+      <input type="checkbox" value="TODOS" checked onchange="handleTodosCheckbox(this)">
+      <span>📊 TODOS OS MESES</span>
+    </label>
+  </div>
+  <button class="filter-apply-btn" onclick="applyFilter()">🔍 Buscar</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     CONTAINER
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="container">
+  
+  <!-- LOADING -->
+  <div class="loading" id="loadingState">
+    <div class="spinner"></div>
+    <div>Carregando dados...</div>
+  </div>
+  
+  <!-- KPIs -->
+  <div class="kpi-grid hidden" id="kpiGrid">
+    <div class="kpi-card">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-label">Total</div>
+      <div class="kpi-value" id="kpi-total">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-label">Aprovados</div>
+      <div class="kpi-value" id="kpi-aprovados">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">⏳</div>
+      <div class="kpi-label">Pendentes</div>
+      <div class="kpi-value" id="kpi-pendentes">0</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon">🏢</div>
+      <div class="kpi-label">Fornecedores</div>
+      <div class="kpi-value" id="kpi-fornecedores">0</div>
+    </div>
+  </div>
+  
+  <!-- VALORES -->
+  <div class="hidden" id="valoresSection">
+    <div class="section-title">💰 Valores Financeiros</div>
+    <div class="valores-grid">
+      <div class="valor-card">
+        <div class="valor-label">Valor Total</div>
+        <div class="valor-amount" id="valor-total">R$ 0,00</div>
+      </div>
+      <div class="valor-card">
+        <div class="valor-label">Valor Médio</div>
+        <div class="valor-amount" id="valor-medio">R$ 0,00</div>
+      </div>
+      <div class="valor-card">
+        <div class="valor-label">Maior Pedido</div>
+        <div class="valor-amount" id="valor-maior">R$ 0,00</div>
+        <div class="valor-detail">
+          <div id="maior-fornecedor">🏢 -</div>
+          <div id="maior-embarcacao">⚓ -</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- FORNECEDORES CRÍTICOS -->
+  <div class="hidden" id="criticosSection">
+    <div class="section-title">🚨 Fornecedores Críticos</div>
+    <div class="critical-container" id="criticosValor"></div>
+  </div>
+  
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════════════ -->
+<script>
+// URL da API
+const API_URL = 'https://script.google.com/macros/s/AKfycbxSVoT9gjBy0isz_fgJVIs7cYwQim0mn1is9O09ZHOPqqSD_bQ3f_1y79BE_nW-Ghz9/exec';
+
+// Variáveis globais
+let dashboardData = null;
+let DB = null;
+let allData = [];
+let currentArea = 'manutencao';
+let currentComprador = 'Lineker';
+let selectedMonths = [];
+let availableMonths = [];
+
+// ═══════════════════════════════════════════════════════════════════
+// INICIALIZAÇÃO
+// ═══════════════════════════════════════════════════════════════════
+async function init() {
+  try {
+    console.log('[MOBILE] Iniciando carregamento...');
+    console.log('[MOBILE] API URL:', API_URL);
+    
+    const response = await fetch(API_URL, {
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache'
+    });
+    
+    console.log('[MOBILE] Response status:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('[MOBILE] Dados recebidos:', data);
+    
+    if (!data || !data.dados) {
+      throw new Error('Dados inválidos');
+    }
+    
+    dashboardData = data;
+    DB = dashboardData;
+    
+    buildMonthFilter();
+    changeArea();
+    
+    document.getElementById('loadingState').classList.add('hidden');
+    document.getElementById('kpiGrid').classList.remove('hidden');
+    document.getElementById('valoresSection').classList.remove('hidden');
+    document.getElementById('criticosSection').classList.remove('hidden');
+    
+    console.log('[MOBILE] Carregamento concluído!');
+  } catch (error) {
+    console.error('[MOBILE] Erro:', error);
+    document.getElementById('loadingState').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div style="font-size:1.2rem;font-weight:700;margin-bottom:1rem">Erro ao carregar</div>
+        <div style="font-size:0.9rem;opacity:0.8;margin-bottom:1rem">${error.message || 'Erro desconhecido'}</div>
+        <button onclick="init()" style="padding:1rem 2rem;background:#00d4ff;border:none;border-radius:12px;color:white;font-weight:700;cursor:pointer;margin-top:1rem">
+          🔄 Tentar novamente
+        </button>
+      </div>
+    `;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// COMPRADORES
+// ═══════════════════════════════════════════════════════════════════
+function toggleCompradorDropdown() {
+  const dropdown = document.getElementById('compradorDropdown');
+  dropdown.classList.toggle('active');
+}
+
+function selectComprador(nome) {
+  currentComprador = nome;
+  document.getElementById('compradorLabel').textContent = nome;
+  
+  // Atualizar opções ativas
+  document.querySelectorAll('.comprador-option').forEach(opt => {
+    opt.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  toggleCompradorDropdown();
+  changeArea();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FILTRO DE ÁREA
+// ═══════════════════════════════════════════════════════════════════
+function changeArea() {
+  try {
+    currentArea = document.getElementById('areaSelector').value;
+    
+    if (!dashboardData || !dashboardData.dados) {
+      console.error('[MOBILE] dashboardData não existe');
+      return;
+    }
+    
+    if (!dashboardData.dados[currentComprador]) {
+      console.error('[MOBILE] Comprador não encontrado:', currentComprador);
+      return;
+    }
+    
+    const dadosComprador = dashboardData.dados[currentComprador];
+    
+    if (!dadosComprador[currentArea] || !dadosComprador[currentArea].dados_completos) {
+      console.error('[MOBILE] Dados da área não encontrados:', currentArea);
+      allData = [];
+    } else {
+      allData = dadosComprador[currentArea].dados_completos;
+    }
+    
+    buildMonthFilter();
+    filterData();
+  } catch (error) {
+    console.error('[MOBILE] Erro em changeArea:', error);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FILTRO DE MESES
+// ═══════════════════════════════════════════════════════════════════
+function buildMonthFilter() {
+  availableMonths = [...new Set(allData.map(d => d.MES_ANO))].filter(m => m).sort().reverse();
+  
+  if (availableMonths.length === 0) {
+    return;
+  }
+  
+  let html = `
+    <label class="month-filter-option">
+      <input type="checkbox" value="TODOS" checked onchange="handleTodosCheckbox(this)">
+      <span>📊 TODOS OS MESES</span>
+    </label>
+  `;
+  
+  availableMonths.forEach(mes => {
+    html += `
+      <label class="month-filter-option">
+        <input type="checkbox" class="month-checkbox" value="${mes}" onchange="handleMonthCheckbox()">
+        <span>📅 ${mes}</span>
+      </label>
+    `;
+  });
+  
+  document.getElementById('monthFilterList').innerHTML = html;
+  selectedMonths = ['TODOS'];
+}
+
+function toggleMonthFilterDropdown() {
+  const dropdown = document.getElementById('monthFilterDropdown');
+  const btn = document.querySelector('.month-filter-toggle-btn');
+  
+  if (dropdown.style.display === 'none' || !dropdown.style.display) {
+    // Calcular posição
+    const rect = btn.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 8) + 'px';
+    
+    dropdown.style.display = 'flex';
+    btn.classList.add('open');
+  } else {
+    dropdown.style.display = 'none';
+    btn.classList.remove('open');
+  }
+}
+
+function handleTodosCheckbox(todosCheckbox) {
+  const monthCheckboxes = document.querySelectorAll('.month-checkbox');
+  if (todosCheckbox.checked) {
+    monthCheckboxes.forEach(cb => cb.checked = false);
+    selectedMonths = ['TODOS'];
+  }
+}
+
+function handleMonthCheckbox() {
+  const todosCheckbox = document.querySelector('input[value="TODOS"]');
+  const monthCheckboxes = document.querySelectorAll('.month-checkbox');
+  const anyMonthChecked = Array.from(monthCheckboxes).some(cb => cb.checked);
+  
+  if (anyMonthChecked) {
+    todosCheckbox.checked = false;
+    selectedMonths = Array.from(monthCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
+  } else {
+    todosCheckbox.checked = true;
+    selectedMonths = ['TODOS'];
+  }
+}
+
+function getSelectedMonths() {
+  const checkboxes = document.querySelectorAll('#monthFilterList input[type="checkbox"]:checked');
+  return Array.from(checkboxes).map(cb => cb.value);
+}
+
+function updateMonthFilterLabel() {
+  const selected = getSelectedMonths();
+  const label = document.getElementById('monthFilterLabel');
+  
+  if (selected.includes('TODOS') || selected.length === 0) {
+    label.textContent = '📊 TODOS OS MESES';
+  } else if (selected.length === 1) {
+    label.textContent = `📅 ${selected[0]}`;
+  } else {
+    label.textContent = `📅 ${selected.length} meses`;
+  }
+}
+
+function applyFilter() {
+  updateMonthFilterLabel();
+  toggleMonthFilterDropdown();
+  filterData();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// FILTRAR DADOS
+// ═══════════════════════════════════════════════════════════════════
+function filterData() {
+  const selectedMonths = getSelectedMonths();
+  
+  let filteredData = allData;
+  
+  // Filtrar por meses
+  if (!selectedMonths.includes('TODOS') && selectedMonths.length > 0) {
+    filteredData = filteredData.filter(d => selectedMonths.includes(d.MES_ANO));
+  }
+  
+  updateKPIs(filteredData);
+  updateValores(filteredData);
+  updateCriticos(filteredData);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ATUALIZAR KPIs
+// ═══════════════════════════════════════════════════════════════════
+function updateKPIs(data) {
+  document.getElementById('kpi-total').textContent = data.length;
+  document.getElementById('kpi-aprovados').textContent = data.filter(d => d.STATUS === 'PEDIDO APROVADO').length;
+  document.getElementById('kpi-pendentes').textContent = data.filter(d => d.STATUS === 'EM APROVAÇÃO').length;
+  document.getElementById('kpi-fornecedores').textContent = new Set(data.map(d => d.FORNECEDOR)).size;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ATUALIZAR VALORES
+// ═══════════════════════════════════════════════════════════════════
+function updateValores(data) {
+  const valores = data.map(d => d.VALOR);
+  const total = valores.reduce((a, b) => a + b, 0);
+  const maior = Math.max(...valores);
+  
+  document.getElementById('valor-total').textContent = formatCurrency(total);
+  document.getElementById('valor-medio').textContent = formatCurrency(total / valores.length);
+  document.getElementById('valor-maior').textContent = formatCurrency(maior);
+  
+  const maiorPedido = data.find(d => d.VALOR === maior);
+  if (maiorPedido) {
+    document.getElementById('maior-fornecedor').textContent = '🏢 ' + maiorPedido.FORNECEDOR;
+    document.getElementById('maior-embarcacao').textContent = '⚓ ' + maiorPedido.EMBARCAÇÃO;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ATUALIZAR CRÍTICOS
+// ═══════════════════════════════════════════════════════════════════
+function updateCriticos(data) {
+  const pendentes = data.filter(d => d.STATUS === 'EM APROVAÇÃO');
+  const criticosValor = {};
+  const criticosQtd = {};
+  
+  pendentes.forEach(d => {
+    const forn = d.FORNECEDOR;
+    criticosValor[forn] = (criticosValor[forn] || 0) + d.VALOR;
+    criticosQtd[forn] = (criticosQtd[forn] || 0) + 1;
+  });
+  
+  const criticosValorSorted = Object.entries(criticosValor).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  
+  let html = '';
+  criticosValorSorted.forEach(([forn, valor]) => {
+    const qtd = criticosQtd[forn];
+    html += `
+      <div class="critical-item">
+        <div class="critical-header">
+          <div class="critical-name">🏢 ${forn}</div>
+          <div class="critical-badge">${qtd} pedidos</div>
+        </div>
+        <div class="critical-value">${formatCurrency(valor)}</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('criticosValor').innerHTML = html || '<div class="empty-state"><div class="empty-icon">✅</div><div>Nenhum fornecedor crítico</div></div>';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════════════════════════════
+function formatCurrency(value) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
+  }).format(value || 0);
+}
+
+// Fechar dropdowns ao clicar fora
+document.addEventListener('click', function(e) {
+  // Comprador dropdown
+  const compradorBtn = document.querySelector('.comprador-button');
+  const compradorDropdown = document.getElementById('compradorDropdown');
+  if (compradorBtn && compradorDropdown && 
+      !compradorBtn.contains(e.target) && 
+      !compradorDropdown.contains(e.target)) {
+    compradorDropdown.classList.remove('active');
+  }
+  
+  // Month dropdown
+  const monthBtn = document.querySelector('.month-filter-toggle-btn');
+  const monthDropdown = document.getElementById('monthFilterDropdown');
+  if (monthBtn && monthDropdown && 
+      !monthBtn.contains(e.target) && 
+      !monthDropdown.contains(e.target)) {
+    monthDropdown.style.display = 'none';
+    monthBtn.classList.remove('open');
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+// PWA SERVICE WORKER
+// ═══════════════════════════════════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+// INICIAR
+window.addEventListener('load', init);
+</script>
+
+</body>
+</html>
